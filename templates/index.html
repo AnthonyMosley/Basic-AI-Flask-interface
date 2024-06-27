@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            background-color: #f5f5dc; /* light gray background */
+            font-family: Arial, sans-serif;
+        }
+
+        #message-space {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #chatbox {
+            width: 100%;
+            height: calc(100vh - 60px); /* adjust the height to match the viewport */
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll; /* allow scrolling */
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>AnthonyMosley AI Test (proof of concept)</h1>
+    <div id="message-space">
+        <input type="text" id="userMessage" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="chatbox"></div>
+
+    <script>
+    async function sendMessage() {
+        const userMessage = document.getElementById('userMessage').value;
+        let chatbox = document.getElementById('chatbox');
+        let aiResponse = '';
+        
+        chatbox.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+        chatbox.innerHTML += `<p><strong>AI:...</strong></p>`;
+        
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userMessage })
+        });
+        
+        const data = await response.json();
+        
+        if (data.response) {
+            aiResponse = `${data.response}`;
+            
+            // Update the AI response in the chatbox
+            chatbox.innerHTML += `<p><strong>AI:</strong> ${aiResponse}</p>`;
+        } else {
+            chatbox.innerHTML += `<p>Error: ${data.error}</p>`;
+        }
+        
+        document.getElementById('userMessage').value = '';
+    }
+
+    </script>
+</body>
+</html>
